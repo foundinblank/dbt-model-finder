@@ -140,9 +140,12 @@ running_models = df_running.shape[0]
 
 if running_models == 0:
     st.subheader("Hmm, I couldn't find any models still running! 🤔")
+    st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
 elif running_models == 1:
     st.subheader(f"Looks like there's 1 model still running. 🤏")
     st.dataframe(df_running[["model_num", "start_time", "model_name"]])
+    st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
 else:
     st.subheader(f"Looks like there's {running_models} models still running. 🚀")
     st.dataframe(df_running[["model_num", "start_time", "model_name"]])
+    st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
