@@ -48,7 +48,7 @@ st.header("")
 raw_input = st.text_area(
     "Paste your in-progress dbt output here (or try the example above)",
     height=300,
-    help="The text should've come from your command line interface. Logs downloaded from dbt Cloud are not supported yet.",
+    help="The text should've come from your command line interface. Logs from dbt Cloud are not supported yet.",
 )
 st.header("")
 
