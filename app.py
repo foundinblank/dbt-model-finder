@@ -59,93 +59,116 @@ if not raw_input:
 # Process dbt output
 input = raw_input.splitlines()
 
+# Remove extraneous words from input to improve column parsing
+extraneous_words = ["sql ", "created ", "creating ", "model ", "loaded ", "file ", "in ", "VIEW ", "\.. "]
+for word in extraneous_words:
+    input = [re.sub(word, "", line) for line in input]
+
+# Insert "test" for passing tests
+input = [re.sub("PASS ", "PASS test ", line) for line in input]
+
 # Let's see the input
 # st.table(input)
 
-# Create lists to store parsed string data
-timecodes = []
-xofys = []
-build_results = []
-model_names = []
-xs = []
-ys = []
+# Turn list into dataframe
+df = pd.DataFrame(input, columns=["raw_line"])
 
-# Parse input
-for line in input:
-    # Get timecode position
-    timecode_string = re.search("([0-9]+(:[0-9]+)+)", line).group()
-    timecode_string = datetime.strptime(timecode_string, "%H:%M:%S").time()
-    timecodes.append(timecode_string)
+# Split raw_line into columns
+df = df["raw_line"].str.split(expand=True)
+df = df.rename(columns={0: "timecode", 1: "model_num", 2: "of", 3: "total_models", 4: "action", 5: "materialization", 6: "model_name", 7: "status", 8: "runtime_1", 9: "runtime_2"}, inplace=False)
 
-    # Get 'x of y' position
-    xofy_string = re.search("(\d+) of (\d+)", line).group()
-    xofys.append(xofy_string)
+# Drop unnecessary columns
+df = df.drop(columns=["of"])
 
-    # Get result position
-    result_string = re.search("(?<= )(START)|(OK)|(ERROR)(?= )", line).group()
-    build_results.append(result_string)
+#  Whenever action column = FAIL, replace the value in materialization column with "test"?
+df["materialization"] = df.apply(lambda row: "test" if row["action"] == "FAIL" else row["materialization"], axis=1)
+df
 
-    # Get model name position
-    modelname_string = re.search("(?<=model ).+\.[A-z]+[^ \.]*(?=.*\[)", line).group()
-    model_names.append(modelname_string)
 
-# Parse 'x of y' into x and y
-for xofy in xofys:
-    x = re.search("^(\d+) ", xofy).group().strip()
-    y = re.search(" (\d+)$", xofy).group().strip()
+# # Create lists to store parsed string data
+# timecodes = []
+# xofys = []
+# build_results = []
+# model_names = []
+# xs = []
+# ys = []
 
-    xs.append(int(x))
-    ys.append(int(y))
+# # Parse input
+# for line in input:
+#     # Get timecode position
+#     timecode_string = re.search("([0-9]+(:[0-9]+)+)", line).group()
+#     timecode_string = datetime.strptime(timecode_string, "%H:%M:%S").time()
+#     timecodes.append(timecode_string)
 
-# Assemble data frame
-df = pd.DataFrame(
-    data=zip(xs, ys, timecodes, model_names, build_results, input),
-    columns=[
-        "model_num",
-        "total_models",
-        "timecode",
-        "model_name",
-        "build_result",
-        "raw_line",
-    ],
-)
+#     # Get 'x of y' position
+#     xofy_string = re.search("(\d+) of (\d+)", line).group()
+#     xofys.append(xofy_string)
 
-# Sort by model_num and timecode
-df = df.sort_values(by=["model_num", "timecode"]).reset_index(drop=True)
+#     # Get result position
+#     result_string = re.search("(?<= )(START)|(OK)|(ERROR)(?= )", line).group()
+#     build_results.append(result_string)
 
-# Now split dataframe into START vs. OK (or whatever else)
-df_start = df[df["build_result"] == "START"]
-df_ok = df[df["build_result"] != "START"]
+#     # Get model name position
+#     modelname_string = re.search("(?<=model ).+\.[A-z]+[^ \.]*(?=.*\[)", line).group()
+#     model_names.append(modelname_string)
 
-# Drop and rename columns before joining
-df_start = df_start.rename(columns={"timecode": "start_time"}).drop(
-    columns=["build_result", "raw_line", "total_models"]
-)
-df_ok = df_ok.rename(columns={"timecode": "end_time"}).drop(
-    columns=["model_name", "build_result"]
-)
+# # Parse 'x of y' into x and y
+# for xofy in xofys:
+#     x = re.search("^(\d+) ", xofy).group().strip()
+#     y = re.search(" (\d+)$", xofy).group().strip()
 
-# And then join based on model_num
-df_joined = df_start.merge(df_ok, on="model_num", how="outer")
+#     xs.append(int(x))
+#     ys.append(int(y))
 
-# Extract models that are still running and count them
-df_running = (
-    df_joined.query("end_time.isnull()")
-    .sort_values(by=["start_time"])
-    .reset_index(drop=True)
-)
+# # Assemble data frame
+# df = pd.DataFrame(
+#     data=zip(xs, ys, timecodes, model_names, build_results, input),
+#     columns=[
+#         "model_num",
+#         "total_models",
+#         "timecode",
+#         "model_name",
+#         "build_result",
+#         "raw_line",
+#     ],
+# )
 
-# How many models are still running?
-running_models = df_running.shape[0]
+# # Sort by model_num and timecode
+# df = df.sort_values(by=["model_num", "timecode"]).reset_index(drop=True)
 
-if running_models == 0:
-    st.subheader("Hmm, I couldn't find any models still running! 🤔")
-    st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
-elif running_models == 1:
-    st.subheader(f"Looks like there's 1 model still running. 🤏")
-    st.dataframe(df_running[["model_num", "start_time", "model_name"]])
-    st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
-else:
-    st.subheader(f"Looks like there's {running_models} models still running. 🚀")
-    st.dataframe(df_running[["model_num", "start_time", "model_name"]])
-    st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
+# # Now split dataframe into START vs. OK (or whatever else)
+# df_start = df[df["build_result"] == "START"]
+# df_ok = df[df["build_result"] != "START"]
+
+# # Drop and rename columns before joining
+# df_start = df_start.rename(columns={"timecode": "start_time"}).drop(
+#     columns=["build_result", "raw_line", "total_models"]
+# )
+# df_ok = df_ok.rename(columns={"timecode": "end_time"}).drop(
+#     columns=["model_name", "build_result"]
+# )
+
+# # And then join based on model_num
+# df_joined = df_start.merge(df_ok, on="model_num", how="outer")
+
+# # Extract models that are still running and count them
+# df_running = (
+#     df_joined.query("end_time.isnull()")
+#     .sort_values(by=["start_time"])
+#     .reset_index(drop=True)
+# )
+
+# # How many models are still running?
+# running_models = df_running.shape[0]
+
+# if running_models == 0:
+#     st.subheader("Hmm, I couldn't find any models still running! 🤔")
+#     st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
+# elif running_models == 1:
+#     st.subheader(f"Looks like there's 1 model still running. 🤏")
+#     st.dataframe(df_running[["model_num", "start_time", "model_name"]])
+#     st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
+# else:
+#     st.subheader(f"Looks like there's {running_models} models still running. 🚀")
+#     st.dataframe(df_running[["model_num", "start_time", "model_name"]])
+#     st.caption("What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com.")
