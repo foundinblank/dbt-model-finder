@@ -2,7 +2,7 @@
 
 This is a Streamlit app that can help you figure out which models are still running. This is really handy if your [dbt](https://www.getdbt.com) run is hanging. Check it out at [https://dbt-model-finder.streamlit.app](https://dbt-model-finder.streamlit.app)!
 
-[![Demo Video](dbt-model-finder-demo.mp4)](dbt-model-finder-demo.mp4)
+[![Demo Video](img/dbt-model-finder-demo.mp4)](img/dbt-model-finder-demo.mp4)
 
 # Planned Improvements
 
