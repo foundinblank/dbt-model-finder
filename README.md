@@ -2,12 +2,11 @@
 
 This is a Streamlit app that can help you figure out which models are still running. This is really handy if your [dbt](https://www.getdbt.com) run is hanging. Check it out at [https://dbt-model-finder.streamlit.app](https://dbt-model-finder.streamlit.app)!
 
-[![Demo Video](screen_recording.gif)](screen_recording.gif)
+[![Demo Video](img/dbt-model-finder-demo.mp4)](img/dbt-model-finder-demo.mp4)
 
 # Planned Improvements
 
-* 🙅 It breaks way too easily if the dbt output is weird in any way. I need to make it more robust to errors. 
-* ☁️ Handle logs downloaded from dbt Cloud which are formatted slightly differently.
+* ☁️ Handle log files downloaded from dbt Cloud which are formatted slightly differently.
 * ⏱️ Return runtime duration for each still-running model
 * 📊 Communicate model runtimes for successful models and maybe a cool viz
 
