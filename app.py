@@ -46,7 +46,7 @@ st.code(
 # Ask for dbt output
 st.header("")
 raw_input = st.text_area(
-    "Paste your in-progress dbt output here (or try the example above). The text can be from your command line interface or the dbt Cloud UI. Log files downloaded from dbt Cloud are not supported yet.",
+    "Paste your in-progress dbt output here (or try the example above). The text can be copied from your command line interface or from the dbt Cloud UI. Log files downloaded from dbt Cloud are not supported yet.",
     height=300,
     help="The text should've come from your command line interface or the dbt Cloud UI.",
 )
