@@ -17,11 +17,13 @@ st.write(
     "I love [dbt](https://www.getdbt.com)! But often when a dbt run hangs, I'm searching through the output line-by-line trying to figure out which models are _still_ running. 😵"
 )
 st.write(
-    "Well, never again. 🎉 Now there's an app for that! Paste your in-progress dbt output in the textbox below. The output should look something like this:"
+    "Well, never again. 🎉 Now there's an app for that! Paste your in-progress dbt output in the textbox below. The text can be copied from your command line interface or from the dbt Cloud UI. Log files _downloaded_ from dbt Cloud are not supported yet."
 )
-st.code(
-    """
-10:03:09  1 of 10 START sql table model hyrule.source_quests  [RUN]
+
+with st.expander("dbt output example"):
+    st.code(
+        """
+    10:03:09  1 of 10 START sql table model hyrule.source_quests  [RUN]
 10:03:09  2 of 10 START sql table model hyrule.source_fairies  [RUN]
 10:03:09  3 of 10 START sql table model hyrule.source_rupees  [RUN]
 10:03:09  4 of 10 START sql table model hyrule.source_rewards  [RUN]
@@ -40,15 +42,35 @@ st.code(
 10:07:32  9 of 10 OK created sql incremental model hyrule.mart_weekly_rewards  [SELECT in 243.76s]
 10:08:00  12 of 12 START sql incremental model hyrule.triforce_purchases  [RUN]
 10:08:35  12 of 12 ERROR creating sql incremental model hyrule.triforce_purchases  [ERROR in 17.03s]
-"""
-)
+    """
+    )
 
 # Ask for dbt output
 st.header("")
 raw_input = st.text_area(
-    "Paste your in-progress dbt output here (or try the example above). The text can be copied from your command line interface or from the dbt Cloud UI. Log files downloaded from dbt Cloud are not supported yet.",
+    "Paste your in-progress dbt output here (or copy the example above).",
     height=300,
     help="The text should've come from your command line interface or the dbt Cloud UI.",
+    placeholder="""10:03:09  1 of 10 START sql table model hyrule.source_quests  [RUN]
+10:03:09  2 of 10 START sql table model hyrule.source_fairies  [RUN]
+10:03:09  3 of 10 START sql table model hyrule.source_rupees  [RUN]
+10:03:09  4 of 10 START sql table model hyrule.source_rewards  [RUN]
+10:03:09  5 of 10 START sql table model hyrule.dim_fairies  [RUN]
+10:03:09  6 of 10 START sql table model hyrule.fct_quests  [RUN]
+10:03:19  1 of 10 OK created sql table model hyrule.source_quests  [SELECT in 10.78s]
+10:03:19  7 of 10 START sql table model hyrule.fct_rupees  [RUN]
+10:03:23  2 of 10 OK created sql table model hyrule.source_fairies  [SELECT in 14.44s]
+10:03:23  8 of 10 START sql table model hyrule.mart_weekly_quests  [RUN]
+10:03:29  3 of 10 OK created sql table model hyrule.source_rupees  [SELECT in 20.14s]
+10:03:29  9 of 10 START sql incremental model hyrule.mart_weekly_rewards  [RUN]
+10:05:55  7 of 10 OK created sql table model hyrule.fct_rupees  [SELECT in 155.22s]
+10:05:55  10 of 10 START sql incremental model hyrule.mart_worlds  [RUN]
+10:06:33  8 of 10 OK created sql table model hyrule.mart_weekly_quests  [SELECT in 189.95s]
+10:06:33  11 of 12 START sql table model hyrule.heart_matrix  [RUN]
+10:07:32  9 of 10 OK created sql incremental model hyrule.mart_weekly_rewards  [SELECT in 243.76s]
+10:08:00  12 of 12 START sql incremental model hyrule.triforce_purchases  [RUN]
+10:08:35  12 of 12 ERROR creating sql incremental model hyrule.triforce_purchases  [ERROR in 17.03s]
+""",
 )
 st.header("")
 
