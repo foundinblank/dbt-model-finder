@@ -27,6 +27,9 @@ EXAMPLE_LOGS = """10:03:09  1 of 10 START sql table model hyrule.source_quests  
 
 
 def title_and_description():
+    '''
+    Title and description of the app
+    '''
     # Front matter
     st.set_page_config(
         page_title="dbt Model Finder",
@@ -52,6 +55,9 @@ def title_and_description():
 
 
 def get_logs():
+    '''
+    Get the dbt output from the user
+    '''
     # Ask for dbt output
     st.header("")
 
@@ -64,6 +70,14 @@ def get_logs():
 
 
 def clean_input(raw_input):
+    '''
+    Clean the input and turn it into a dataframe.
+    Input: raw dbt output. Output: pandas dataframe with the following columns:
+    - raw_line: raw line of text from the dbt output
+    - Model Number: model number in the dbt run
+    - Start Time: time the model started
+    - Model Name: name of the model
+    '''
     # Check if dbt output is entered
     if not raw_input:
         st.stop()
@@ -130,6 +144,9 @@ def clean_input(raw_input):
 
 
 def output(df):
+    '''
+    Output the results
+    '''
     feedback_str = "What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com."
     running_models = df.shape[0]
 
@@ -145,6 +162,9 @@ def output(df):
 
 
 def main():
+    '''
+    Run the app
+    '''
     title_and_description()
     raw_input = get_logs()
     df = clean_input(raw_input)
