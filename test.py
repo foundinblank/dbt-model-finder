@@ -1,4 +1,3 @@
-# %%
 import unittest
 import pandas as pd
 from app import clean_input as clean_app_input
