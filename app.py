@@ -4,7 +4,8 @@ import pandas as pd
 from datetime import datetime, date
 
 
-REGEX = r'\s*(?:\[0m)?(\d{2}:\d{2}:\d{2})\s+(\d+)\s+of\s+\d+\s+.*?(?:model\s|of\s)\b(\w+\.\w+)\b'
+REGEX = r"\s*(?:\[0m)?(\d{2}:\d{2}:\d{2})\s+(\d+)\s+of\s+\d+\s+.*?(?:model\s|of\s)\b(\w+\.\w+)\b"
+
 
 def title_and_description():
     # Front matter
@@ -47,6 +48,7 @@ def title_and_description():
     10:08:35  12 of 12 ERROR creating sql incremental model hyrule.triforce_purchases  [ERROR in 17.03s]"""
         )
 
+
 def get_logs():
     # Ask for dbt output
     st.header("")
@@ -76,6 +78,7 @@ def get_logs():
     10:08:35  12 of 12 ERROR creating sql incremental model hyrule.triforce_purchases  [ERROR in 17.03s]""",
     )
 
+
 def clean_input(raw_input):
     # Check if dbt output is entered
     if not raw_input:
@@ -89,13 +92,15 @@ def clean_input(raw_input):
 
     # Turn modified input into dataframe
     df = pd.DataFrame(input, columns=["raw_line"])
-    
+
     # TO DO: Sort out the status & runtime columns
     # Parse out the start time, model number, model name, and status using regex
-    df['post_regex'] = df['raw_line'].apply(lambda col: re.search(REGEX, col).groups())
+    df["post_regex"] = df["raw_line"].apply(lambda col: re.search(REGEX, col).groups())
 
     # Convert the post_regex column from a tuple to multiple columns
-    df[['start_time','model_num','model_name']] = pd.DataFrame(df['post_regex'].to_list(), index=df.index)
+    df[["start_time", "model_num", "model_name"]] = pd.DataFrame(
+        df["post_regex"].to_list(), index=df.index
+    )
 
     # Convert columns to their correct data types
     df["start_time"] = df.apply(
@@ -105,10 +110,17 @@ def clean_input(raw_input):
 
     # Get list of columns that are still running
     # We are just looking for models that have a single line of output
-    still_running = df.groupby('model_num')['raw_line'].count().reset_index().query('raw_line == 1')['model_num'].to_list()
+    still_running = (
+        df.groupby("model_num")["raw_line"]
+        .count()
+        .reset_index()
+        .query("raw_line == 1")["model_num"]
+        .to_list()
+    )
 
     # Filter out the rows that are still running and return
-    return df[df['model_num'].isin(still_running)].sort_values(by=['model_num'])
+    return df[df["model_num"].isin(still_running)].sort_values(by=["model_num"])
+
 
 def output(df):
     # How many models are still running?
@@ -131,11 +143,13 @@ def output(df):
             "What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com."
         )
 
+
 def main():
     title_and_description()
     raw_input = get_logs()
     df = clean_input(raw_input)
     output(df)
+
 
 if __name__ == "__main__":
     main()
