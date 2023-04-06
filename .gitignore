@@ -3,3 +3,4 @@
 
 test-cases
 venv/
+__pycache__/
