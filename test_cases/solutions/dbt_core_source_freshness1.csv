@@ -1,0 +1,8 @@
+raw_line,Start Time,Model Number,Model Name
+20:26:20  2 of 72 START freshness of test_ad_schema.ad_extension_detail_daily_report ........... [RUN],20:26:20,2,test_ad_schema.ad_extension_detail_daily_report
+20:26:20  3 of 72 START freshness of test_ad_schema.ad_group_history ........................... [RUN],20:26:20,3,test_ad_schema.ad_group_history
+20:26:20  6 of 72 START freshness of test_ad_schema.campaign_history ........................... [RUN],20:26:20,6,test_ad_schema.campaign_history
+20:26:20  7 of 72 START freshness of test_ad_schema.keyword_history ............................ [RUN],20:26:20,7,test_ad_schema.keyword_history
+20:26:22  9 of 72 START freshness of facebook_ads.account_history ........................ [RUN],20:26:22,9,facebook_ads.account_history
+20:26:22  10 of 72 START freshness of facebook_ads.ad_campaign_issues_info ............... [RUN],20:26:22,10,facebook_ads.ad_campaign_issues_info
+20:26:22  11 of 72 START freshness of facebook_ads.ad_conversion ......................... [RUN],20:26:22,11,facebook_ads.ad_conversion

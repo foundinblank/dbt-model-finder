@@ -1,0 +1,4 @@
+raw_line,Start Time,Model Number,Model Name
+14:52:55  2 of 5 START sql view model schema1.sessions_event_products  [RUN],14:52:55,2,schema1.sessions_event_products
+14:52:55  3 of 5 START sql table model schema1.sessions_events  [RUN],14:52:55,3,schema1.sessions_events
+14:52:55  4 of 5 START sql view model schema1.sessions_other  [RUN],14:52:55,4,schema1.sessions_other

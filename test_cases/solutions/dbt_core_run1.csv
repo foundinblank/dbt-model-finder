@@ -1,0 +1,6 @@
+raw_line,Start Time,Model Number,Model Name
+10:03:09  4 of 10 START sql table model hyrule.source_rewards  [RUN],10:03:09,4,hyrule.source_rewards
+10:03:09  5 of 10 START sql table model hyrule.dim_fairies  [RUN],10:03:09,5,hyrule.dim_fairies
+10:03:09  6 of 10 START sql table model hyrule.fct_quests  [RUN],10:03:09,6,hyrule.fct_quests
+10:05:55  10 of 10 START sql incremental model hyrule.mart_worlds  [RUN],10:05:55,10,hyrule.mart_worlds
+10:06:33  11 of 12 START sql table model hyrule.heart_matrix  [RUN],10:06:33,11,hyrule.heart_matrix
