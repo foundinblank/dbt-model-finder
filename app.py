@@ -4,6 +4,8 @@ import pandas as pd
 from datetime import datetime, date
 
 
+REGEX = r'\s*(?:\[0m)?(\d{2}:\d{2}:\d{2})\s+(\d+)\s+of\s+\d+\s+.*?(?:model\s|of\s)\b(\w+\.\w+)\b'
+
 def title_and_description():
     # Front matter
     st.set_page_config(
@@ -24,8 +26,7 @@ def title_and_description():
 
     with st.expander("dbt output example"):
         st.code(
-            """
-        10:03:09  1 of 10 START sql table model hyrule.source_quests  [RUN]
+            """10:03:09  1 of 10 START sql table model hyrule.source_quests  [RUN]
     10:03:09  2 of 10 START sql table model hyrule.source_fairies  [RUN]
     10:03:09  3 of 10 START sql table model hyrule.source_rupees  [RUN]
     10:03:09  4 of 10 START sql table model hyrule.source_rewards  [RUN]
@@ -43,8 +44,7 @@ def title_and_description():
     10:06:33  11 of 12 START sql table model hyrule.heart_matrix  [RUN]
     10:07:32  9 of 10 OK created sql incremental model hyrule.mart_weekly_rewards  [SELECT in 243.76s]
     10:08:00  12 of 12 START sql incremental model hyrule.triforce_purchases  [RUN]
-    10:08:35  12 of 12 ERROR creating sql incremental model hyrule.triforce_purchases  [ERROR in 17.03s]
-        """
+    10:08:35  12 of 12 ERROR creating sql incremental model hyrule.triforce_purchases  [ERROR in 17.03s]"""
         )
 
 def get_logs():
@@ -73,8 +73,7 @@ def get_logs():
     10:06:33  11 of 12 START sql table model hyrule.heart_matrix  [RUN]
     10:07:32  9 of 10 OK created sql incremental model hyrule.mart_weekly_rewards  [SELECT in 243.76s]
     10:08:00  12 of 12 START sql incremental model hyrule.triforce_purchases  [RUN]
-    10:08:35  12 of 12 ERROR creating sql incremental model hyrule.triforce_purchases  [ERROR in 17.03s]
-    """,
+    10:08:35  12 of 12 ERROR creating sql incremental model hyrule.triforce_purchases  [ERROR in 17.03s]""",
     )
 
 def clean_input(raw_input):
@@ -85,95 +84,31 @@ def clean_input(raw_input):
     # Process dbt output
     input = raw_input.splitlines()
 
-    # Modify input by removing extraneous words -- this helps with string parsing later
-    extraneous_words = [
-        "sql ",
-        "created ",
-        "creating ",
-        "model ",
-        "loaded ",
-        "file ",
-        "in ",
-        "VIEW ",
-        "\.. ",
-    ]
-
-    for word in extraneous_words:
-        input = [re.sub(word, "", line) for line in input]
-
-    # For input lines containing passing tests, insert "test" into input
-    input = [re.sub("PASS ", "PASS test ", line) for line in input]
+    # Remove empty lines and whitespace
+    input = [line for line in input if not line.isspace()]
 
     # Turn modified input into dataframe
     df = pd.DataFrame(input, columns=["raw_line"])
-
-    # Split raw_line into columns
-    df = df["raw_line"].str.split(expand=True)
-    df = df.rename(
-        columns={
-            0: "timecode",
-            1: "model_num",
-            2: "of",
-            3: "total_models",
-            4: "action",
-            5: "materialization",
-            6: "model_name",
-            7: "status",
-            8: "runtime_1",
-            9: "runtime_2",
-        },
-        inplace=False,
-    )
-
-    # Drop unnecessary columns
-    df = df.drop(columns=["of"])
-
-    #  Whenever the action column = FAIL, replace the value in the materialization column with "test"
-    df["materialization"] = df.apply(
-        lambda row: "test" if row["action"] == "FAIL" else row["materialization"], axis=1
-    )
-
-    # Now add the original input back in as a column, convert empty strings to NaN, then drop all-NaN rows
-    df["raw_line"] = raw_input.splitlines()
-    df["raw_line"] = df.apply(
-        lambda row: None if row["raw_line"] == "" else row["raw_line"], axis=1
-    )
-    df = df.dropna(axis=0, how="all")
-
+    
     # TO DO: Sort out the status & runtime columns
+    # Parse out the start time, model number, model name, and status using regex
+    df['post_regex'] = df['raw_line'].apply(lambda col: re.search(REGEX, col).groups())
 
-    # Cast appropriate columns as timestamps & integers
-    df["timecode"] = df.apply(
-        lambda row: datetime.strptime(row["timecode"], "%H:%M:%S").time(), axis=1
+    # Convert the post_regex column from a tuple to multiple columns
+    df[['start_time','model_num','model_name']] = pd.DataFrame(df['post_regex'].to_list(), index=df.index)
+
+    # Convert columns to their correct data types
+    df["start_time"] = df.apply(
+        lambda row: datetime.strptime(row["start_time"], "%H:%M:%S").time(), axis=1
     )
     df["model_num"] = df["model_num"].astype(int)
-    df["total_models"] = df["total_models"].astype(int)
 
-    # Sort by model_num and timecode
-    df = df.sort_values(by=["model_num", "timecode"]).reset_index(drop=True)
+    # Get list of columns that are still running
+    # We are just looking for models that have a single line of output
+    still_running = df.groupby('model_num')['raw_line'].count().reset_index().query('raw_line == 1')['model_num'].to_list()
 
-    # Now split dataframe into START vs. OK (or whatever else)
-    df_start = df[df["action"] == "START"]
-    df_ok = df[df["action"] != "START"]
-
-    # Drop and rename columns before joining
-    df_start = df_start.rename(columns={"timecode": "start_time"}).drop(
-        columns=["action", "raw_line", "total_models"]
-    )
-    df_ok = df_ok.rename(columns={"timecode": "end_time"}).drop(
-        columns=["model_name", "action"]
-    )
-
-    # And then join based on model_num
-    df_joined = df_start.merge(df_ok, on="model_num", how="outer")
-
-    # Extract models that are still running and count them
-    df_running = (
-        df_joined.query("end_time.isnull()")
-        .sort_values(by=["start_time"])
-        .reset_index(drop=True)
-    )
-    return df_running
+    # Filter out the rows that are still running and return
+    return df[df['model_num'].isin(still_running)].sort_values(by=['model_num'])
 
 def output(df):
     # How many models are still running?
@@ -204,4 +139,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-#%%
