@@ -1,6 +1,5 @@
 .python-version
 .vscode
 
-test-cases
 venv/
 __pycache__/
