@@ -98,7 +98,7 @@ def clean_input(raw_input):
 
     # Convert columns to their correct data types
     df["start_time"] = df.apply(
-        lambda row: datetime.strptime(row["start_time"], "%H:%M:%S").time(), axis=1
+        lambda row: str(datetime.strptime(row["start_time"], "%H:%M:%S").time()), axis=1
     )
     df["model_num"] = df["model_num"].astype(int)
 
@@ -117,6 +117,7 @@ def clean_input(raw_input):
     return (
         df[df["model_num"].isin(still_running)]
         .sort_values(by=["model_num"])
+        .drop(columns=["post_regex"])
         .rename(
             columns={
                 "model_num": "Model Number",
@@ -124,6 +125,7 @@ def clean_input(raw_input):
                 "model_name": "Model Name",
             }
         )
+        .reset_index(drop=True)
     )
 
 
