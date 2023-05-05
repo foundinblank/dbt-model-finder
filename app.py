@@ -1,10 +1,7 @@
 import streamlit as st
-import streamlit_analytics
 import re
 import pandas as pd
 from datetime import datetime, date
-
-streamlit_analytics.start_tracking()
 
 # Front matter
 st.set_page_config(
@@ -193,5 +190,3 @@ else:
     st.caption(
         "What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com."
     )
-
-streamlit_analytics.stop_tracking()
