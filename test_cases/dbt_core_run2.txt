@@ -1,0 +1,7 @@
+14:52:55  1 of 5 START sql view model schema1.sessions  [RUN]
+14:52:55  2 of 5 START sql view model schema1.sessions_event_products  [RUN]
+14:52:55  3 of 5 START sql table model schema1.sessions_events  [RUN]
+14:52:55  4 of 5 START sql view model schema1.sessions_other  [RUN]
+14:52:55  5 of 5 START sql view model schema1.sessions_pageviews  [RUN]
+14:53:36  5 of 5 ERROR creating sql view model schema1.sessions_pageviews  [ERROR in 1.48s]
+14:52:58  1 of 5 OK created sql view model schema1.sessions  [SUCCESS 1 in 3.10s]

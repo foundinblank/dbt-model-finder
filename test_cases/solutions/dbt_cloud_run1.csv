@@ -1,0 +1,6 @@
+raw_line,Start Time,Model Number,Model Name
+[0m07:47:09  2 of 60 START sql table model validation.dim_z_countdown_timer ............... [RUN],07:47:09,2,validation.dim_z_countdown_timer
+[0m07:47:19  7 of 60 START sql incremental model sources.source_bofa__bofa_portal_session_created_events  [RUN],07:47:19,7,sources.source_bofa__bofa_portal_session_created_events
+[0m07:47:19  8 of 60 START sql incremental model sources.source_bofa__aorta_ij_new  [RUN],07:47:19,8,sources.source_bofa__aorta_ij_new
+[0m07:47:19  9 of 60 START sql incremental model sources.source_bofa__aorta_ij_updated  [RUN],07:47:19,9,sources.source_bofa__aorta_ij_updated
+[0m07:47:19  10 of 60 START sql incremental model sources.source_bofa__hyrule_paypal_settlements  [RUN],07:47:19,10,sources.source_bofa__hyrule_paypal_settlements

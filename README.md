@@ -6,9 +6,9 @@ https://user-images.githubusercontent.com/31513760/228296710-0804ea9d-b874-43b2-
 
 # Planned Improvements
 
-* ☁️ Handle log files downloaded from dbt Cloud which are formatted slightly differently.
 * ⏱️ Return runtime duration for each still-running model
 * 📊 Communicate model runtimes for successful models and maybe a cool viz
+* 📝 Add functionality for dbt test and dbt build
 
 # 💡 Reporting Bugs and Contributing
 
