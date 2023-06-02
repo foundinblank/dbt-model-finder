@@ -186,7 +186,7 @@ elif running_models == 1:
     )
 else:
     st.subheader(f"Looks like there's {running_models} models still running. 🚀")
-    st.dataframe(df_running[["model_num", "start_time", "model_name"]])
+    st.dataframe(df_running[["model_num", "start_time", "model_name"]], hide_index=True)
     st.caption(
         "What do you think? Drop some feedback in [the repo](https://github.com/foundinblank/dbt-model-finder/) or email me at adamstone@gmail.com."
     )
