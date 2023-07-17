@@ -17,7 +17,10 @@ st.write(
     "I love [dbt](https://www.getdbt.com)! But often when a dbt run hangs, I'm searching through the output line-by-line trying to figure out which models are _still_ running. 😵"
 )
 st.write(
-    "Well, never again. 🎉 Now there's an app for that! Paste your in-progress dbt output in the textbox below. The text can be copied from your command line interface or from the dbt Cloud UI. Log files _downloaded_ from dbt Cloud are not supported yet."
+    "Well, never again. 🎉 Now there's an app for that! Paste your in-progress dbt output in the textbox below. The text can be copied from your command line interface or from the dbt Cloud UI."
+)
+st.caption(
+    "Warning: Log files _downloaded_ from dbt Cloud are not supported yet. Also, if you have custom console output, this app won't parse it correctly and will break."
 )
 
 with st.expander("dbt output example"):
